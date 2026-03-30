@@ -1,0 +1,34 @@
+# JS Scout Pro v10 — Requirements
+# Install: pip install -r requirements.txt
+# Linux browser mode: apt install chromium chromium-driver
+
+# ── Core HTTP ──────────────────────────────────────────────────────────────────
+requests>=2.31.0
+urllib3>=2.0.0
+
+# ── Browser automation (optional — needed for XSS confirmation) ───────────────
+selenium>=4.0.0
+webdriver-manager>=4.0.0
+
+# ── Web UI ─────────────────────────────────────────────────────────────────────
+flask>=3.0.0
+
+# ── Phase 13: External Tools Integration ──────────────────────────────────────
+# All 15 tool ports run on stdlib + requests (already listed above).
+# No extra installs needed for:
+#   JS-Scan, LinksDumper, GoLinkFinder, BurpJSLinkFinder, urlgrab,
+#   waybackurls, gau, getJS, linx, waymore, xnLinkFinder, URLFinder,
+#   jsleak, jsfinder, jsluice
+#
+# Optional: install the real binaries for maximum coverage alongside Python ports:
+#   go install github.com/lc/gau/v2/cmd/gau@latest
+#   go install github.com/tomnomnom/waybackurls@latest
+#   go install github.com/0xsha/GoLinkFinder@latest
+#   go install github.com/003random/getJS@latest
+#   go install github.com/BishopFox/jsluice/cmd/jsluice@latest
+#   pip install waymore
+
+# ── Standard library (no install needed) ──────────────────────────────────────
+# re, sys, os, json, time, hashlib, argparse, threading, pathlib, socket
+# queue, collections, concurrent.futures, urllib.parse, html.parser
+# base64, hmac, random, string, statistics, logging, zipfile, uuid, datetime
