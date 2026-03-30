@@ -1,0 +1,1189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JS Scout Pro</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap');
+
+:root {
+  --bg: #080b0f;
+  --bg2: #0d1117;
+  --bg3: #111720;
+  --border: #1e2d3d;
+  --accent: #00ff9f;
+  --accent2: #00d4ff;
+  --accent3: #ff0055;
+  --warn: #ffaa00;
+  --dim: #3a5068;
+  --text: #c9d8e8;
+  --text2: #6b8fa8;
+  --critical: #ff2244;
+  --high: #ff6622;
+  --medium: #ffcc00;
+  --low: #44aaff;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Share Tech Mono', monospace;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── GRID BG ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0,255,159,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,255,159,0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── HEADER ── */
+header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(8,11,15,0.95);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(12px);
+  padding: 0 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 60px;
+}
+
+.logo {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 900;
+  font-size: 20px;
+  color: var(--accent);
+  letter-spacing: 4px;
+  text-shadow: 0 0 20px rgba(0,255,159,0.5);
+}
+.logo span { color: var(--accent2); }
+
+.header-meta {
+  font-size: 11px;
+  color: var(--dim);
+  letter-spacing: 2px;
+}
+
+/* ── MAIN LAYOUT ── */
+main {
+  position: relative;
+  z-index: 1;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 32px 24px;
+}
+
+/* ── SCAN FORM ── */
+.scan-panel {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-top: 2px solid var(--accent);
+  padding: 28px 32px;
+  margin-bottom: 28px;
+  position: relative;
+  overflow: hidden;
+}
+.scan-panel::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 2px;
+  background: linear-gradient(90deg, var(--accent), var(--accent2), var(--accent3));
+  animation: slide 3s linear infinite;
+}
+@keyframes slide {
+  0% { background-position: 0 0; }
+  100% { background-position: 200px 0; }
+}
+
+.panel-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 11px;
+  letter-spacing: 4px;
+  color: var(--accent);
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.panel-title::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.target-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+input[type=text], input[type=number], select, textarea {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 14px;
+  padding: 10px 14px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+input[type=text]:focus, input[type=number]:focus, textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(0,255,159,0.1);
+}
+
+#target-input {
+  flex: 1;
+  font-size: 16px;
+  letter-spacing: 1px;
+}
+#target-input::placeholder { color: var(--dim); }
+
+.btn-scan {
+  background: var(--accent);
+  color: var(--bg);
+  border: none;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  padding: 10px 32px;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.btn-scan:hover {
+  background: var(--bg);
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  box-shadow: 0 0 20px rgba(0,255,159,0.3);
+}
+.btn-scan:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.options-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.field-group { display: flex; flex-direction: column; gap: 5px; }
+.field-label {
+  font-size: 10px;
+  color: var(--dim);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.advanced-toggle {
+  font-size: 11px;
+  color: var(--accent2);
+  cursor: pointer;
+  letter-spacing: 2px;
+  border: none;
+  background: none;
+  font-family: inherit;
+  padding: 4px 0;
+}
+.advanced-toggle:hover { text-decoration: underline; }
+
+.advanced-opts {
+  display: none;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+.advanced-opts.show { display: grid; }
+
+/* ── PROGRESS ── */
+.progress-panel {
+  display: none;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  padding: 20px 24px;
+  margin-bottom: 28px;
+}
+.progress-panel.show { display: block; }
+
+.progress-bar-wrap {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  height: 6px;
+  margin: 12px 0;
+  position: relative;
+  overflow: hidden;
+}
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  transition: width 0.4s;
+  position: relative;
+}
+.progress-bar::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: -2px;
+  width: 2px;
+  height: 10px;
+  background: white;
+  box-shadow: 0 0 8px white;
+}
+.progress-bar.scanning {
+  animation: scan-pulse 1.5s ease-in-out infinite;
+}
+@keyframes scan-pulse {
+  0%, 100% { box-shadow: 0 0 8px rgba(0,255,159,0.5); }
+  50% { box-shadow: 0 0 20px rgba(0,255,159,0.9); }
+}
+
+.log-area {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  height: 200px;
+  overflow-y: auto;
+  padding: 12px;
+  font-size: 12px;
+  font-family: 'Share Tech Mono', monospace;
+  line-height: 1.8;
+}
+.log-area::-webkit-scrollbar { width: 4px; }
+.log-area::-webkit-scrollbar-track { background: var(--bg2); }
+.log-area::-webkit-scrollbar-thumb { background: var(--dim); }
+
+.log-line { color: var(--text2); }
+.log-line.good { color: var(--accent); }
+.log-line.warn { color: var(--warn); }
+.log-line.error { color: var(--accent3); }
+.log-line.phase { color: var(--accent2); font-weight: bold; }
+
+/* ── RESULTS ── */
+.results-panel { display: none; }
+.results-panel.show { display: block; }
+
+/* Stats bar */
+.stats-bar {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 2px;
+  margin-bottom: 24px;
+}
+
+.stat-box {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  padding: 16px 20px;
+  text-align: center;
+  position: relative;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.stat-box:hover { border-color: var(--accent); background: var(--bg3); }
+.stat-box.active { border-color: var(--accent); }
+.stat-box.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px; left: 20%; right: 20%;
+  height: 2px;
+  background: var(--accent);
+}
+
+.stat-val {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  display: block;
+  line-height: 1;
+}
+.stat-val.critical { color: var(--critical); text-shadow: 0 0 10px rgba(255,34,68,0.5); }
+.stat-val.high { color: var(--high); }
+.stat-val.medium { color: var(--medium); }
+.stat-val.good { color: var(--accent); }
+.stat-val.info { color: var(--accent2); }
+
+.stat-label {
+  font-size: 10px;
+  color: var(--dim);
+  letter-spacing: 2px;
+  margin-top: 6px;
+  display: block;
+  text-transform: uppercase;
+}
+
+/* Tabs */
+.tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 0;
+}
+.tab-btn {
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--dim);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 2px;
+  padding: 12px 20px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: uppercase;
+}
+.tab-btn:hover { color: var(--text); }
+.tab-btn.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+.tab-content {
+  display: none;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-top: none;
+}
+.tab-content.active { display: block; }
+
+/* Finding cards */
+.findings-list {
+  padding: 0;
+  max-height: 600px;
+  overflow-y: auto;
+}
+.findings-list::-webkit-scrollbar { width: 4px; }
+.findings-list::-webkit-scrollbar-thumb { background: var(--dim); }
+
+.finding-card {
+  border-bottom: 1px solid var(--border);
+  padding: 16px 20px;
+  transition: background 0.15s;
+  cursor: pointer;
+}
+.finding-card:hover { background: var(--bg3); }
+.finding-card.expanded { background: var(--bg3); }
+
+.finding-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.badge {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 9px;
+  font-weight: 700;
+  padding: 3px 8px;
+  letter-spacing: 1px;
+  border: 1px solid;
+  white-space: nowrap;
+}
+.badge.CRITICAL { color: var(--critical); border-color: var(--critical); background: rgba(255,34,68,0.08); }
+.badge.HIGH     { color: var(--high);     border-color: var(--high);     background: rgba(255,102,34,0.08); }
+.badge.MEDIUM   { color: var(--medium);   border-color: var(--medium);   background: rgba(255,204,0,0.08); }
+.badge.LOW      { color: var(--low);      border-color: var(--low);      background: rgba(68,170,255,0.08); }
+.badge.INFO     { color: var(--dim);      border-color: var(--dim);      background: transparent; }
+
+.finding-title {
+  font-size: 13px;
+  color: var(--text);
+  flex: 1;
+}
+.finding-meta {
+  font-size: 11px;
+  color: var(--dim);
+  font-family: 'Share Tech Mono', monospace;
+}
+
+.finding-detail {
+  display: none;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px dashed var(--border);
+}
+.finding-detail.show { display: block; }
+
+.code-block {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent3);
+  padding: 10px 14px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 12px;
+  color: var(--warn);
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+  margin: 8px 0;
+}
+
+.payloads-block {
+  margin-top: 12px;
+}
+.payloads-title {
+  font-size: 10px;
+  color: var(--accent);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.payload-item {
+  background: var(--bg);
+  border: 1px solid rgba(0,255,159,0.15);
+  border-left: 2px solid var(--accent);
+  padding: 6px 12px;
+  margin-bottom: 4px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  color: var(--accent2);
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  word-break: break-all;
+}
+.payload-item:hover { background: rgba(0,255,159,0.05); border-color: var(--accent); }
+.payload-copy { font-size: 10px; color: var(--dim); white-space: nowrap; margin-left: 12px; flex-shrink: 0; }
+.payload-copy:hover { color: var(--accent); }
+
+/* Endpoints tab */
+.ep-list {
+  padding: 16px 20px;
+  max-height: 600px;
+  overflow-y: auto;
+}
+.ep-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(30,45,61,0.5);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 13px;
+}
+.ep-method {
+  font-size: 10px;
+  padding: 2px 6px;
+  border: 1px solid var(--accent2);
+  color: var(--accent2);
+  font-family: 'Orbitron', sans-serif;
+  letter-spacing: 1px;
+  white-space: nowrap;
+}
+.ep-path { color: var(--text); word-break: break-all; }
+.ep-source { font-size: 10px; color: var(--dim); margin-left: auto; white-space: nowrap; }
+
+/* Payload library tab */
+.payload-library {
+  padding: 20px;
+}
+.payload-category {
+  margin-bottom: 28px;
+}
+.payload-cat-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 11px;
+  color: var(--accent);
+  letter-spacing: 3px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 8px;
+  margin-bottom: 12px;
+}
+
+/* JS Files tab */
+.js-file-list {
+  padding: 16px 20px;
+}
+.js-file-item {
+  display: grid;
+  grid-template-columns: 1fr auto auto auto;
+  gap: 16px;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(30,45,61,0.5);
+  font-size: 12px;
+}
+.js-file-name { color: var(--text); word-break: break-all; }
+.js-file-badge {
+  font-size: 10px;
+  padding: 2px 6px;
+  border: 1px solid var(--dim);
+  color: var(--dim);
+  white-space: nowrap;
+}
+.js-file-badge.hit { border-color: var(--accent3); color: var(--accent3); }
+
+/* Download btn */
+.btn-dl {
+  background: none;
+  border: 1px solid var(--accent2);
+  color: var(--accent2);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  padding: 6px 16px;
+  cursor: pointer;
+  letter-spacing: 2px;
+  transition: all 0.2s;
+}
+.btn-dl:hover {
+  background: var(--accent2);
+  color: var(--bg);
+}
+
+/* Confirmed flow highlight */
+.confirmed-flow {
+  display: inline-block;
+  background: rgba(255,0,85,0.15);
+  border: 1px solid var(--accent3);
+  color: var(--accent3);
+  font-size: 10px;
+  padding: 2px 8px;
+  letter-spacing: 2px;
+  animation: blink 1s step-end infinite;
+}
+@keyframes blink { 50% { opacity: 0.5; } }
+
+/* Empty state */
+.empty-state {
+  padding: 40px;
+  text-align: center;
+  color: var(--dim);
+  font-size: 13px;
+  letter-spacing: 2px;
+}
+
+/* Risk badge large */
+.risk-banner {
+  padding: 8px 16px;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 11px;
+  letter-spacing: 3px;
+  border: 1px solid;
+  display: inline-block;
+  margin-bottom: 16px;
+}
+.risk-banner.CRITICAL { color: var(--critical); border-color: var(--critical); background: rgba(255,34,68,0.08); }
+.risk-banner.HIGH { color: var(--high); border-color: var(--high); background: rgba(255,102,34,0.08); }
+.risk-banner.MEDIUM { color: var(--medium); border-color: var(--medium); }
+.risk-banner.INFO { color: var(--dim); border-color: var(--dim); }
+
+/* Notification */
+#notif {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: var(--bg2);
+  border: 1px solid var(--accent);
+  padding: 10px 20px;
+  font-size: 12px;
+  color: var(--accent);
+  letter-spacing: 2px;
+  z-index: 9999;
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+}
+#notif.show { opacity: 1; }
+
+/* Scan history */
+.scan-history {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+.scan-history-item {
+  font-size: 11px;
+  color: var(--dim);
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  padding: 4px 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.scan-history-item:hover { color: var(--accent2); border-color: var(--accent2); }
+
+@media (max-width: 768px) {
+  .target-row { flex-direction: column; }
+  header { padding: 0 16px; }
+  main { padding: 16px; }
+  .stats-bar { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">JS<span>SCOUT</span> PRO</div>
+  <div class="header-meta">JAVASCRIPT SECURITY RECON // v3.0</div>
+</header>
+
+<main>
+
+<!-- SCAN PANEL -->
+<div class="scan-panel">
+  <div class="panel-title">⬡ TARGET ACQUISITION</div>
+
+  <div class="target-row">
+    <input type="text" id="target-input" placeholder="https://target.com" autocomplete="off" spellcheck="false">
+    <button class="btn-scan" id="btn-scan" onclick="startScan()">▶ SCAN</button>
+  </div>
+
+  <div class="options-row">
+    <div class="field-group">
+      <span class="field-label">Threads</span>
+      <input type="number" id="opt-threads" value="10" min="1" max="50" style="width:100%">
+    </div>
+    <div class="field-group">
+      <span class="field-label">Max Pages</span>
+      <input type="number" id="opt-pages" value="150" min="10" max="1000" style="width:100%">
+    </div>
+    <div class="field-group">
+      <span class="field-label">Depth</span>
+      <input type="number" id="opt-depth" value="3" min="1" max="10" style="width:100%">
+    </div>
+    <div class="field-group">
+      <span class="field-label">Timeout (s)</span>
+      <input type="number" id="opt-timeout" value="15" min="5" max="60" style="width:100%">
+    </div>
+  </div>
+
+  <button class="advanced-toggle" onclick="toggleAdvanced()">+ ADVANCED OPTIONS</button>
+
+  <div class="advanced-opts" id="advanced-opts">
+    <div class="field-group">
+      <span class="field-label">Cookies</span>
+      <input type="text" id="opt-cookies" placeholder="session=abc; token=xyz" style="width:100%">
+    </div>
+    <div class="field-group">
+      <span class="field-label">Auth Token (Bearer)</span>
+      <input type="text" id="opt-token" placeholder="eyJhbGc..." style="width:100%">
+    </div>
+  </div>
+
+  <div id="scan-history-wrap" class="scan-history" style="display:none">
+    <span style="font-size:10px;color:var(--dim);letter-spacing:2px;line-height:2">RECENT:</span>
+  </div>
+</div>
+
+<!-- PROGRESS PANEL -->
+<div class="progress-panel" id="progress-panel">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+    <span id="phase-label" style="font-size:12px;color:var(--accent2);letter-spacing:2px">Initializing...</span>
+    <span id="progress-pct" style="font-family:'Orbitron',sans-serif;font-size:14px;color:var(--accent)">0%</span>
+  </div>
+  <div class="progress-bar-wrap">
+    <div class="progress-bar scanning" id="progress-bar" style="width:0%"></div>
+  </div>
+  <div class="log-area" id="log-area"></div>
+</div>
+
+<!-- RESULTS PANEL -->
+<div class="results-panel" id="results-panel">
+
+  <div id="risk-banner"></div>
+
+  <!-- Stats bar -->
+  <div class="stats-bar" id="stats-bar"></div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="showTab('xss')">XSS SINKS</button>
+    <button class="tab-btn" onclick="showTab('reflected')" style="color:#ff2244">⚡ REFLECTED XSS</button>
+    <button class="tab-btn" onclick="showTab('secrets')">SECRETS</button>
+    <button class="tab-btn" onclick="showTab('endpoints')">ENDPOINTS</button>
+    <button class="tab-btn" onclick="showTab('dom')">DOM / PROTO</button>
+    <button class="tab-btn" onclick="showTab('payloads')">PAYLOADS</button>
+    <button class="tab-btn" onclick="showTab('jsfiles')">JS FILES</button>
+    <button class="tab-btn" style="margin-left:auto" onclick="downloadReport()">↓ REPORT</button>
+  </div>
+
+  <div class="tab-content active" id="tab-xss"></div>
+  <div class="tab-content" id="tab-reflected"></div>
+  <div class="tab-content" id="tab-secrets"></div>
+  <div class="tab-content" id="tab-endpoints"></div>
+  <div class="tab-content" id="tab-dom"></div>
+  <div class="tab-content" id="tab-payloads"></div>
+  <div class="tab-content" id="tab-jsfiles"></div>
+
+</div>
+
+<div id="notif">COPIED</div>
+
+</main>
+
+<script>
+let currentScanId = null;
+let currentReportUrl = null;
+let pollTimer = null;
+let scanHistory = JSON.parse(localStorage.getItem('jsscout_history') || '[]');
+
+// ── INIT ──────────────────────────────────────────────────────────────────
+function init() {
+  if (scanHistory.length) {
+    const wrap = document.getElementById('scan-history-wrap');
+    wrap.style.display = 'flex';
+    scanHistory.slice(-5).reverse().forEach(t => {
+      const el = document.createElement('div');
+      el.className = 'scan-history-item';
+      el.textContent = t;
+      el.onclick = () => { document.getElementById('target-input').value = t; };
+      wrap.appendChild(el);
+    });
+  }
+  document.getElementById('target-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') startScan();
+  });
+}
+
+function toggleAdvanced() {
+  document.getElementById('advanced-opts').classList.toggle('show');
+}
+
+// ── SCAN ─────────────────────────────────────────────────────────────────
+async function startScan() {
+  const target = document.getElementById('target-input').value.trim();
+  if (!target) { flashNotif('Enter a target URL'); return; }
+
+  // Save to history
+  if (!scanHistory.includes(target)) {
+    scanHistory.push(target);
+    if (scanHistory.length > 20) scanHistory.shift();
+    localStorage.setItem('jsscout_history', JSON.stringify(scanHistory));
+  }
+
+  currentReportUrl = null;
+  document.getElementById('btn-scan').disabled = true;
+  document.getElementById('results-panel').classList.remove('show');
+  document.getElementById('progress-panel').classList.add('show');
+  document.getElementById('log-area').innerHTML = '';
+  document.getElementById('progress-bar').style.width = '0%';
+  document.getElementById('progress-pct').textContent = '0%';
+
+  const body = {
+    target,
+    options: {
+      threads: +document.getElementById('opt-threads').value,
+      max_pages: +document.getElementById('opt-pages').value,
+      depth: +document.getElementById('opt-depth').value,
+      timeout: +document.getElementById('opt-timeout').value,
+    },
+    cookies: document.getElementById('opt-cookies').value.trim(),
+    auth_token: document.getElementById('opt-token').value.trim(),
+  };
+
+  try {
+    const resp = await fetch('/api/scan/start', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(body),
+    });
+    const data = await resp.json();
+    if (data.error) { alert(data.error); resetScanBtn(); return; }
+    currentScanId = data.scan_id;
+    pollStatus();
+  } catch (e) {
+    addLog('error', `Failed to start scan: ${e.message}`);
+    resetScanBtn();
+  }
+}
+
+function resetScanBtn() {
+  document.getElementById('btn-scan').disabled = false;
+}
+
+function pollStatus() {
+  clearTimeout(pollTimer);
+  pollTimer = setTimeout(async () => {
+    if (!currentScanId) return;
+    try {
+      const resp = await fetch(`/api/scan/${currentScanId}/status`);
+      const data = await resp.json();
+      updateProgress(data);
+
+      if (data.status === 'complete') {
+        if (data.report_url) currentReportUrl = data.report_url;
+        loadResults();
+      } else if (data.status === 'error') {
+        addLog('error', data.phase);
+        resetScanBtn();
+      } else {
+        pollTimer = setTimeout(pollStatus, 1500);
+      }
+    } catch (e) {
+      pollTimer = setTimeout(pollStatus, 3000);
+    }
+  }, 500);
+}
+
+let lastLogCount = 0;
+function updateProgress(data) {
+  document.getElementById('progress-bar').style.width = data.progress + '%';
+  document.getElementById('progress-pct').textContent = data.progress + '%';
+  document.getElementById('phase-label').textContent = data.phase || '';
+
+  const logs = data.log || [];
+  const newLogs = logs.slice(lastLogCount);
+  lastLogCount = logs.length;
+  newLogs.forEach(entry => {
+    const cls = entry.msg.startsWith('[+]') ? 'good'
+              : entry.msg.startsWith('[!]') ? 'warn'
+              : entry.msg.startsWith('[ERROR]') ? 'error'
+              : entry.msg.startsWith('[*]') ? 'phase'
+              : '';
+    addLog(cls, `${entry.time} ${entry.msg}`);
+  });
+}
+
+function addLog(cls, msg) {
+  const area = document.getElementById('log-area');
+  const line = document.createElement('div');
+  line.className = `log-line ${cls}`;
+  line.textContent = msg;
+  area.appendChild(line);
+  area.scrollTop = area.scrollHeight;
+}
+
+// ── RESULTS ──────────────────────────────────────────────────────────────
+async function loadResults() {
+  try {
+    const resp = await fetch(`/api/scan/${currentScanId}/results`);
+    const data = await resp.json();
+    renderResults(data);
+    resetScanBtn();
+    document.getElementById('progress-bar').classList.remove('scanning');
+  } catch (e) {
+    addLog('error', 'Failed to load results: ' + e.message);
+    resetScanBtn();
+  }
+}
+
+function renderResults(r) {
+  document.getElementById('results-panel').classList.add('show');
+
+  // Risk banner
+  const risk = calcRisk(r);
+  const rb = document.getElementById('risk-banner');
+  const fullUrl = currentReportUrl ? window.location.origin + currentReportUrl : '';
+  const reportBanner = fullUrl ? `
+    <div style="background:#0d1117;border:1px solid #00d4ff;padding:14px 20px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+      <div>
+        <div style="font-family:'Orbitron',sans-serif;font-size:9px;letter-spacing:3px;color:#3a5068;margin-bottom:4px">SHAREABLE REPORT LINK</div>
+        <code id="report-url-text" style="font-size:13px;color:#00d4ff">${fullUrl}</code>
+      </div>
+      <div style="display:flex;gap:8px;flex-shrink:0">
+        <button onclick="navigator.clipboard.writeText('${fullUrl}').then(()=>flashNotif('LINK COPIED'))" 
+          style="background:none;border:1px solid #00d4ff;color:#00d4ff;font-family:'Share Tech Mono',monospace;
+          font-size:11px;padding:6px 14px;cursor:pointer;letter-spacing:2px">COPY LINK</button>
+        <a href="${currentReportUrl}" target="_blank"
+          style="display:inline-block;background:#00d4ff;color:#080b0f;font-family:'Orbitron',sans-serif;
+          font-size:10px;font-weight:700;letter-spacing:2px;padding:7px 16px;text-decoration:none">
+          OPEN ↗</a>
+      </div>
+    </div>` : '';
+  rb.innerHTML = reportBanner + `<div style="display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:16px">
+    <div class="risk-banner ${risk}">⚠ RISK LEVEL: ${risk}</div></div>`;
+
+  // Stats
+  const stats = [
+    { val: (r.js_files||[]).length, label: 'JS Files', cls: 'info' },
+    { val: Object.keys(r.endpoints||{}).length, label: 'Endpoints', cls: 'good' },
+    { val: (r.secrets||[]).length, label: 'Secrets', cls: r.secrets?.length ? 'critical' : 'good' },
+    { val: (r.poc_findings||[]).length, label: 'Reflected XSS', cls: (r.poc_findings||[]).length ? 'critical' : 'good' },
+    { val: (r.xss_findings||[]).filter(x=>x.confirmed_flow).length, label: 'XSS src→sink', cls: 'critical' },
+    { val: (r.xss_findings||[]).length, label: 'XSS Sinks', cls: r.xss_findings?.length ? 'high' : 'good' },
+    { val: (r.dom_clobber||[]).length, label: 'DOM Clobber', cls: r.dom_clobber?.length ? 'medium' : 'good' },
+  ];
+  document.getElementById('stats-bar').innerHTML = stats.map(s =>
+    `<div class="stat-box" onclick="scrollToTab(s)">
+      <span class="stat-val ${s.cls}">${s.val}</span>
+      <span class="stat-label">${s.label}</span>
+    </div>`
+  ).join('');
+
+  // Reflected XSS PoCs tab
+  const pocs = r.poc_findings || [];
+  document.getElementById('tab-reflected').innerHTML = pocs.length
+    ? `<div class="findings-list">${pocs.map(p => reflectedXssCard(p)).join('')}</div>`
+    : emptyState('No reflected XSS confirmed — try with Selenium enabled and more depth');
+
+  // XSS tab
+  const xss = (r.xss_findings||[]).sort((a,b) => sev(b.severity)-sev(a.severity));
+  document.getElementById('tab-xss').innerHTML = xss.length
+    ? `<div class="findings-list">${xss.map(x => xssCard(x)).join('')}</div>`
+    : emptyState('No XSS sinks detected');
+
+  // Secrets tab
+  const secrets = (r.secrets||[]).sort((a,b) => sev(b.severity)-sev(a.severity));
+  document.getElementById('tab-secrets').innerHTML = secrets.length
+    ? `<div class="findings-list">${secrets.map(s => secretCard(s)).join('')}</div>`
+    : emptyState('No secrets detected');
+
+  // Endpoints tab
+  const eps = Object.entries(r.endpoints||{}).sort((a,b) => a[0].localeCompare(b[0]));
+  document.getElementById('tab-endpoints').innerHTML = eps.length
+    ? `<div class="ep-list">${eps.map(([ep, files]) =>
+        `<div class="ep-item">
+          <span class="ep-method">GET</span>
+          <span class="ep-path">${esc(ep)}</span>
+          <span class="ep-source">${files.slice(0,2).join(', ')}</span>
+        </div>`).join('')}</div>`
+    : emptyState('No endpoints extracted');
+
+  // DOM / Proto tab
+  const domItems = [...(r.dom_clobber||[]), ...(r.proto_pollution||[])].sort((a,b) => sev(b.severity)-sev(a.severity));
+  document.getElementById('tab-dom').innerHTML = domItems.length
+    ? `<div class="findings-list">${domItems.map(d => domCard(d)).join('')}</div>`
+    : emptyState('No DOM clobbering or prototype pollution detected');
+
+  // Payload library tab
+  renderPayloads(r.payload_library || {});
+
+  // JS Files tab
+  const files = (r.js_files||[]).sort((a,b) => b.size - a.size);
+  document.getElementById('tab-jsfiles').innerHTML = files.length
+    ? '<div class="js-file-list">' + files.map(f => {
+        const nameCell = f.source_url
+          ? '<a href="' + esc(f.source_url) + '" target="_blank" title="' + esc(f.source_url) + '" style="color:#00d4ff">' + esc(f.name) + '</a>'
+          : '<span>' + esc(f.name) + '</span>';
+        return '<div class="js-file-item">'
+          + '<span class="js-file-name">' + nameCell + '</span>'
+          + '<span class="js-file-badge ' + (f.secrets>0?'hit':'') + '">&#128273; ' + (f.secrets||0) + '</span>'
+          + '<span class="js-file-badge ' + (f.xss_sinks>0?'hit':'') + '">&#9888; ' + (f.xss_sinks||0) + ' XSS</span>'
+          + '<span class="js-file-badge">' + (f.size/1024).toFixed(1) + ' KB</span>'
+          + (f.minified ? '<span class="js-file-badge" style="color:#888">min</span>' : '')
+          + '</div>';
+      }).join('') + '</div>'
+    : emptyState('No JS files downloaded');
+}
+
+function calcRisk(r) {
+  if ((r.secrets||[]).some(s => s.severity === 'CRITICAL')) return 'CRITICAL';
+  if ((r.poc_findings||[]).length) return 'CRITICAL';
+  if ((r.xss_findings||[]).some(x => x.confirmed_flow) || (r.secrets||[]).length) return 'HIGH';
+  if ((r.xss_findings||[]).length || (r.dom_clobber||[]).length) return 'MEDIUM';
+  return 'INFO';
+}
+
+function sev(s) {
+  return {CRITICAL:4, HIGH:3, MEDIUM:2, LOW:1, INFO:0}[s] || 0;
+}
+
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function emptyState(msg) {
+  return `<div class="empty-state">[ ${msg} ]</div>`;
+}
+
+// ── CARDS ─────────────────────────────────────────────────────────────────
+
+function reflectedXssCard(p) {
+  const id = `rxss-${Math.random().toString(36).slice(2,8)}`;
+  const conf = p.browser_confirmed ? '<span class="confirmed-flow" style="color:#00ff9f">✓ BROWSER CONFIRMED</span>' : '<span style="color:#ffaa00">⚠ REFLECTED (not browser-tested)</span>';
+  return `<div class="finding-card" onclick="toggleDetail('${id}')" style="border-left:3px solid #ff2244">
+    <div class="finding-header">
+      <span class="badge CRITICAL">CRITICAL</span>
+      <span class="finding-title">Reflected XSS — param: ${esc(p.param)}</span>
+      ${conf}
+    </div>
+    <div class="finding-detail" id="${id}">
+      <div style="margin-bottom:10px">
+        <div style="font-size:10px;color:#3a5068;letter-spacing:2px;margin-bottom:4px">PoC URL (CLICK TO OPEN)</div>
+        <a href="${esc(p.url)}" target="_blank" style="color:#00d4ff;word-break:break-all;font-size:12px">${esc(p.url)}</a>
+      </div>
+      <div style="margin-bottom:8px">
+        <span style="color:#3a5068;font-size:10px">CONTEXT: </span><span style="color:#ffaa00">${esc(p.context||'unknown')}</span>
+      </div>
+      <div class="code-block copy-payload-btn" data-payload="${esc(p.payload).replace(/"/g,'&quot;')}" title="Click to copy payload">
+        ${esc(p.payload)} <span class="payload-copy">[ COPY PAYLOAD ]</span>
+      </div>
+      ${p.evidence ? `<div style="margin-top:8px;font-size:11px;color:#888">Evidence: <code>${esc(p.evidence.substring(0,200))}</code></div>` : ''}
+    </div>
+  </div>`;
+}
+
+function xssCard(x) {
+  const id = `xss-${Math.random().toString(36).slice(2,8)}`;
+  const confirmed = x.confirmed_flow ? '<span class="confirmed-flow">⚡ CONFIRMED FLOW</span>' : '';
+  const pocLinks = (x.poc_urls||[]).slice(0,3).map(p =>
+    `<div style="margin-top:6px;font-size:11px"><a href="${esc(p.url)}" target="_blank" style="color:#00d4ff">🔗 PoC: ${esc(p.url.substring(0,100))}</a></div>`
+  ).join('');
+
+  return `<div class="finding-card" onclick="toggleDetail('${id}')">
+    <div class="finding-header">
+      <span class="badge ${x.severity}">${x.severity}</span>
+      <span class="finding-title">${esc(x.sink || x.sink_type || 'XSS Sink')}</span>
+      ${confirmed}
+      <span class="finding-meta">${esc(x.file)} : ${x.line}</span>
+    </div>
+    <div class="finding-detail" id="${id}">
+      <div class="code-block">${esc(x.context || x.match || x.code || '')}</div>
+      ${pocLinks}
+    </div>
+  </div>`;
+}
+
+function secretCard(s) {
+  const id = `sec-${Math.random().toString(36).slice(2,8)}`;
+  return `<div class="finding-card" onclick="toggleDetail('${id}')">
+    <div class="finding-header">
+      <span class="badge ${s.severity}">${s.severity}</span>
+      <span class="finding-title">${esc(s.type)}</span>
+      <span class="finding-meta">${esc(s.file)} : ${s.line}</span>
+    </div>
+    <div class="finding-detail" id="${id}">
+      <div class="code-block">${esc(s.value)}</div>
+      <div style="margin-top:8px;font-size:11px;color:var(--dim)">Context: ${esc(s.context)}</div>
+      <div class="payloads-block" style="margin-top:10px">
+        <div class="payload-item copy-payload-btn" data-payload="${esc(s.value).replace(/"/g,'&quot;')}">
+          <span>${esc(s.value)}</span>
+          <span class="payload-copy">[ COPY VALUE ]</span>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function domCard(d) {
+  const id = `dom-${Math.random().toString(36).slice(2,8)}`;
+  return `<div class="finding-card" onclick="toggleDetail('${id}')">
+    <div class="finding-header">
+      <span class="badge ${d.severity||'MEDIUM'}">${d.severity||'MEDIUM'}</span>
+      <span class="finding-title">${esc(d.type || d.name || 'DOM Issue')}</span>
+      <span class="finding-meta">${esc(d.file)} : ${d.line}</span>
+    </div>
+    <div class="finding-detail" id="${id}">
+      <div class="code-block">${esc(d.code || d.context || '')}</div>
+    </div>
+  </div>`;
+}
+
+function renderPayloads(lib) {
+  const container = document.createElement('div');
+  container.className = 'payload-library';
+  Object.entries(lib).forEach(([cat, payloads]) => {
+    const div = document.createElement('div');
+    div.className = 'payload-category';
+    // Build category title safely
+    const title = document.createElement('div');
+    title.className = 'payload-cat-title';
+    title.textContent = cat.toUpperCase().replace(/_/g, ' ');
+    div.appendChild(title);
+    payloads.forEach(p => {
+      const item = document.createElement('div');
+      item.className = 'payload-item copy-payload-btn';
+      item.dataset.payload = p;  // store raw in dataset — no HTML injection
+      const code = document.createElement('span');
+      code.textContent = p;      // textContent — fully safe
+      const copy = document.createElement('span');
+      copy.className = 'payload-copy';
+      copy.textContent = '[ COPY ]';
+      item.appendChild(code);
+      item.appendChild(copy);
+      div.appendChild(item);
+    });
+    container.appendChild(div);
+  });
+  document.getElementById('tab-payloads').innerHTML = '';
+  document.getElementById('tab-payloads').appendChild(container);
+}
+
+// ── UI HELPERS ────────────────────────────────────────────────────────────
+
+function toggleDetail(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.classList.toggle('show');
+  el.closest('.finding-card').classList.toggle('expanded');
+}
+
+function showTab(name) {
+  document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  document.getElementById(`tab-${name}`).classList.add('active');
+  event.target.classList.add('active');
+}
+
+function copyPayload(el, text) {
+  // 'text' param kept for backward compat but we prefer data-payload
+  const payload = el.dataset?.payload ?? text;
+  event.stopPropagation();
+  navigator.clipboard.writeText(payload).then(() => {
+    flashNotif('PAYLOAD COPIED');
+  }).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = payload;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    ta.remove();
+    flashNotif('COPIED');
+  });
+}
+
+// Delegated click handler for all copy-payload-btn elements (safe — uses dataset)
+document.addEventListener('click', function(e) {
+  const btn = e.target.closest('.copy-payload-btn');
+  if (!btn) return;
+  e.stopPropagation();
+  const payload = btn.dataset.payload || '';
+  navigator.clipboard.writeText(payload).then(() => {
+    const cp = btn.querySelector('.payload-copy');
+    if (cp) { cp.textContent = '✓ COPIED'; setTimeout(() => cp.textContent = '[ COPY ]', 2000); }
+    flashNotif('PAYLOAD COPIED');
+  }).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = payload;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    ta.remove();
+    flashNotif('COPIED');
+  });
+});
+
+function flashNotif(msg) {
+  const n = document.getElementById('notif');
+  n.textContent = msg;
+  n.classList.add('show');
+  setTimeout(() => n.classList.remove('show'), 1800);
+}
+
+function downloadReport() {
+  if (!currentScanId) return;
+  window.open(`/api/scan/${currentScanId}/report`, '_blank');
+}
+
+init();
+</script>
+</body>
+</html>
